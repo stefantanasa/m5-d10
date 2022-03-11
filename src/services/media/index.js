@@ -130,4 +130,20 @@ mediaRouter.post("/:imdbId/reviews", reviewValidator, (req, res, next) => {
   }
 });
 
+mediaRouter.delete("/:imdbId", (req, res, next) => {
+  try {
+    const mediaArray = getMovies();
+    if (mediaArray) {
+      const remainingData = mediaArray.filter((movie) => {
+        return movie.imdbId.toString() !== req.params.imdbId;
+      });
+
+      writeMovie(remainingData);
+      res.status(200).send(remainingData);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default mediaRouter;

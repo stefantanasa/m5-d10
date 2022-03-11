@@ -4,6 +4,7 @@ import { validationResult } from "express-validator";
 import { getMovies, writeMovie } from "../lib/fs-tools.js";
 import createError from "http-errors";
 import unique from "unique";
+import { cloudUploader } from "../lib/fs-tools.js";
 
 const mediaRouter = express.Router();
 
@@ -140,6 +141,39 @@ mediaRouter.delete("/:imdbId", (req, res, next) => {
 
       writeMovie(remainingData);
       res.status(200).send(remainingData);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+mediaRouter.post("/:imdbId/poster", cloudUploader, (req, res, next) => {
+  try {
+    const moviesArray = getMovies();
+
+    const imdbId = req.params.imdbId;
+
+    console.log(moviesArray);
+    const index = moviesArray.findIndex((movie) => {
+      console.log({ imdbId: movie.imdbId, params: imdbId });
+      return movie.imdbId.toString() === imdbId;
+    });
+
+    if (index !== -1) {
+      // oldMovie = {
+      //   ...oldMovie,
+      //   reviews: [],
+      // };
+      moviesArray[index] = {
+        ...moviesArray[index],
+        poster: req.file.path,
+      };
+
+      writeMovie(moviesArray);
+
+      res.status(201).send(moviesArray[index]);
+    } else {
+      res.send("Movie not found!");
     }
   } catch (error) {
     next(error);

@@ -146,6 +146,33 @@ mediaRouter.delete("/:imdbId", (req, res, next) => {
     next(error);
   }
 });
+mediaRouter.delete("/:id/reviews", (req, res, next) => {
+  try {
+    const mediaArray = getMovies();
+
+    const foundMovie = mediaArray.find((movie) =>
+      movie.reviews.find((review) => review._id.toString() === req.params.id)
+    );
+
+    const remainingReviews = foundMovie.reviews.filter((rev) => {
+      return rev._id.toString() !== req.params.id;
+    });
+
+    const updatedReviews = [
+      {
+        ...foundMovie,
+        reviews: remainingReviews,
+      },
+    ];
+    console.log(updatedReviews);
+
+    writeMovie(updatedReviews);
+
+    res.send(remainingReviews);
+  } catch (error) {
+    next(error);
+  }
+});
 
 mediaRouter.post("/:imdbId/poster", cloudUploader, (req, res, next) => {
   try {

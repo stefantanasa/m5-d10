@@ -21,6 +21,7 @@
     "http-errors": "^2.0.0",
     "multer": "^1.4.4",
     "multer-storage-cloudinary": "^4.0.0",
+    "pdfmake": "^0.2.4",
     "unique": "^0.0.1"
   },
   "devDependencies": {

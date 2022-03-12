@@ -5,6 +5,8 @@ import { getMovies, writeMovie } from "../lib/fs-tools.js";
 import createError from "http-errors";
 import unique from "unique";
 import { cloudUploader } from "../lib/fs-tools.js";
+import { pipeline } from "stream";
+import { getPDFReadableStream } from "../lib/pdf-maker.js";
 
 const mediaRouter = express.Router();
 
@@ -46,25 +48,25 @@ mediaRouter.get("/", (req, res, next) => {
     next(error);
   }
 });
+
 mediaRouter.get("/:imdbId", (req, res, next) => {
-  const mediaArray = getMovies();
-
-  // const index = moviesArray.findIndex((movie) => {
-  //   console.log({ imdbId: movie.imdbId, params: imdbId });
-  //   return movie.imdbId.toString() === imdbId;
-  // });
-
-  const foundMedia = mediaArray.find((m) => {
-    return m.imdbId.toString() === req.params.imdbId;
-  });
-  if (foundMedia) {
-    {
-      res.status(200).send(foundMedia);
+  try {
+    const mediaArray = getMovies();
+    const foundMedia = mediaArray.find((m) => {
+      return m.imdbId.toString() === req.params.imdbId;
+    });
+    console.log(foundMedia);
+    if (foundMedia) {
+      {
+        res.status(200).send(foundMedia);
+      }
+    } else {
+      {
+        res.status(200).send("media not found!");
+      }
     }
-  } else {
-    {
-      res.status(200).send("media not found!");
-    }
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -146,6 +148,7 @@ mediaRouter.delete("/:imdbId", (req, res, next) => {
     next(error);
   }
 });
+
 mediaRouter.delete("/:id/reviews", (req, res, next) => {
   try {
     const mediaArray = getMovies();
@@ -207,4 +210,36 @@ mediaRouter.post("/:imdbId/poster", cloudUploader, (req, res, next) => {
   }
 });
 
+mediaRouter.get("/:id/pdf", (req, res, next) => {
+  console.log("this is pdf!");
+  try {
+    const mediaArray = getMovies();
+    const foundMedia = mediaArray.find((m) => {
+      return m.imdbId.toString() === req.params.id;
+    });
+    console.log(foundMedia);
+    if (foundMedia) {
+      {
+        res.setHeader(
+          "Content-Disposition",
+          "attachement; filename=example.pdf"
+        );
+        const source = getPDFReadableStream(foundMedia);
+        const destination = res;
+
+        pipeline(source, destination, (err) => {
+          console.log(err);
+        });
+      }
+    } else {
+      {
+        res.status(504).send("media not found!");
+      }
+    }
+
+    //end of gate
+  } catch (error) {
+    next(error);
+  }
+});
 export default mediaRouter;

@@ -24,3 +24,11 @@ export const cloudUploader = multer({
     },
   }),
 }).single("poster");
+export const pdfCloudUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "m5-d10",
+    },
+  }),
+}).single("pdf");

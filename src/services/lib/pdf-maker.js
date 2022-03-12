@@ -1,5 +1,7 @@
 import PdfPrinter from "pdfmake";
 
+const a = ["sadsa", "asdasdasd"];
+
 export const getPDFReadableStream = (data) => {
   const fonts = {
     Helvetica: {
@@ -17,19 +19,18 @@ export const getPDFReadableStream = (data) => {
         style: "header",
       },
       {
-        text: `title: ${data.title}`,
-        style: "subheader",
-      },
-      {
-        text: `year: ${data.year}`,
-      },
-      {
-        text: `type: ${data.type}`,
-        style: ["bold"],
-      },
-      {
-        text: `imdbId: ${data.imdbId}`,
-        style: ["bold"],
+        style: "tableExample",
+        table: {
+          body: [
+            Object.keys(data).toString().split(","),
+            Object.values(data).toString().split(","),
+          ],
+        },
+        layout: {
+          fillColor: function (rowIndex, node, columnIndex) {
+            return rowIndex % 2 === 0 ? "#CCCCCC" : null;
+          },
+        },
       },
     ],
     styles: {

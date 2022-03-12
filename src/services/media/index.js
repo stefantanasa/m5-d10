@@ -7,6 +7,7 @@ import unique from "unique";
 import { cloudUploader, pdfCloudUploader } from "../lib/fs-tools.js";
 import { pipeline } from "stream";
 import { getPDFReadableStream } from "../lib/pdf-maker.js";
+import { join } from "path";
 
 const mediaRouter = express.Router();
 
@@ -211,13 +212,14 @@ mediaRouter.post("/:imdbId/poster", cloudUploader, (req, res, next) => {
 });
 
 mediaRouter.get("/:id/pdf", (req, res, next) => {
-  console.log("this is pdf!");
+  console.log("this is res pdf!");
   try {
     const mediaArray = getMovies();
     const foundMedia = mediaArray.find((m) => {
       return m.imdbId.toString() === req.params.id;
     });
-    console.log(foundMedia);
+    console.log(Object.values(foundMedia).toString().split(","));
+
     if (foundMedia) {
       {
         res.setHeader(
@@ -228,7 +230,7 @@ mediaRouter.get("/:id/pdf", (req, res, next) => {
         const destination = res;
 
         pipeline(source, destination, (err) => {
-          console.log(err);
+          next(err);
         });
       }
     } else {

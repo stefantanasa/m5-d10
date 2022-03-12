@@ -220,6 +220,18 @@ mediaRouter.get("/:id/pdf", (req, res, next) => {
     });
     console.log(Object.values(foundMedia).toString().split(","));
 
+    // FILTER OBJECT TO GET RID OF REVIEWS
+    // Convert `obj` to a key/value array
+    // `[['name', 'Luke Skywalker'], ['title', 'Jedi Knight'], ...]`
+    const asArray = Object.entries(foundMedia);
+
+    const filtered = asArray.filter((x) => x[0] !== "reviews");
+
+    // Convert the key/value array back to an object:
+    // `{ name: 'Luke Skywalker', title: 'Jedi Knight' }`
+    const justStrings = Object.fromEntries(filtered);
+
+    console.log("strings: ", justStrings);
     if (foundMedia) {
       {
         res.setHeader(

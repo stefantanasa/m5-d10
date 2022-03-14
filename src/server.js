@@ -10,7 +10,7 @@ import {
 import cors from "cors";
 const server = express();
 server.use(express.json());
-server.use(cors);
+server.use(cors());
 server.use("/media", mediaRouters);
 server.use(badRequestHandler);
 server.use(unauthorizedHandler);

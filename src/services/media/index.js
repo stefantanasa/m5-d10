@@ -8,34 +8,19 @@ import { cloudUploader, pdfCloudUploader } from "../lib/fs-tools.js";
 import { pipeline } from "stream";
 import { getPDFReadableStream } from "../lib/pdf-maker.js";
 import sgMail from "@sendgrid/mail";
-import { sendRegistrationEmail } from "../lib/email-sender.js";
+import { sendEmail } from "../lib/email-sender.js";
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const mediaRouter = express.Router();
 
-// mediaRouter.post("/sendEmail", async (req, res, next) => {
-//   try {
-//     await sendEmail();
-//     res.send();
-//   } catch (error) {
-//     console.log(error);
-//     res.send(error);
-//     next(error);
-//   }
-// });
-
 mediaRouter.post("/sendEmail", async (req, res, next) => {
   try {
-    // 1. Receive email address from req.body
-    const { email } = req.body;
-
-    // 2. Save new user in db
-
-    // 3. Send email to new user
-    await sendRegistrationEmail(email);
+    await sendEmail();
     res.send();
   } catch (error) {
+    console.log(error);
+    res.send(error);
     next(error);
   }
 });
